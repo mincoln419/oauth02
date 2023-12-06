@@ -41,17 +41,17 @@ public class SecurityConfig {
 		return http.build();
 	}
 
-	@Bean
-	@Order(1)
-	SecurityFilterChain securityFilterChain2(HttpSecurity http) throws Exception {
-
-		http.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated());
-		http.formLogin(Customizer.withDefaults());
-		http.httpBasic(Customizer.withDefaults());
-		http.apply(new CustomSecurityConfigure().setFlag(true));
-		http.cors(auth -> auth.configurationSource(corsConfigurationSource()));
-		return http.build();
-	}
+//	@Bean
+//	@Order(1)
+//	SecurityFilterChain securityFilterChain2(HttpSecurity http) throws Exception {
+//
+//		http.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated());
+//		http.formLogin(Customizer.withDefaults());
+//		http.httpBasic(Customizer.withDefaults());
+//		http.apply(new CustomSecurityConfigure().setFlag(true));
+//		http.cors(auth -> auth.configurationSource(corsConfigurationSource()));
+//		return http.build();
+//	}
 
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
