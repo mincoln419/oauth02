@@ -28,16 +28,16 @@ public class SecurityConfig {
 	SecurityFilterChain securityFilterChain1(HttpSecurity http) throws Exception {
 
 		http.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated());
-		http.formLogin(Customizer.withDefaults());
+		//http.formLogin(Customizer.withDefaults());
 //		http.apply(new CustomSecurityConfigure().setFlag(true));
-//		http.exceptionHandling(authorize -> authorize.authenticationEntryPoint(new AuthenticationEntryPoint() {
-//
-//			@Override
-//			public void commence(HttpServletRequest request, HttpServletResponse response,
-//					AuthenticationException authException) throws IOException, ServletException {
-//				log.info("custom entry point");
-//			}
-//		}));
+		http.exceptionHandling(authorize -> authorize.authenticationEntryPoint(new AuthenticationEntryPoint() {
+
+			@Override
+			public void commence(HttpServletRequest request, HttpServletResponse response,
+					AuthenticationException authException) throws IOException, ServletException {
+				log.info("custom entry point");
+			}
+		}));
 		return http.build();
 	}
 
