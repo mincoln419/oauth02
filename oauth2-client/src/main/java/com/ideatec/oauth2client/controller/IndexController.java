@@ -12,16 +12,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IndexController {
 
-	@Autowired
-	private ClientRegistrationRepository clientRegistrationRepository;
+	//@Autowired
+	//private ClientRegistrationRepository clientRegistrationRepository;
 
 	@GetMapping("/")
 	public String index() {
-		ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("keycloak");
+		//ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("keycloak");
 
-		log.info("client id : {}", clientRegistration.getClientId());
+		//log.info("client id : {}", clientRegistration.getClientId());
 
-		log.info("redirect uri : {}", clientRegistration.getRedirectUri());
+		//log.info("redirect uri : {}", clientRegistration.getRedirectUri());
 		return "index";
+	}
+
+	@GetMapping("/loginPage")
+	public String loginPage() {
+		return "loginPage";
 	}
 }
