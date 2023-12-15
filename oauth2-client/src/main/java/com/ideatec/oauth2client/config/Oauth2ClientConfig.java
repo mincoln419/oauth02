@@ -22,7 +22,7 @@ public class Oauth2ClientConfig {
 
 		return 	ClientRegistrations.fromIssuerLocation("http://localhost:8080/realms/oauth2")
 				.registrationId("keycloak")
-				.scope("openid")
+				.scope("profile email")
 				.clientId("oauth2-client-app")
 				.clientName("oauth2-client-app")
 				.clientSecret("WOK6puaB91PpJFuFonHke8hbE2oYoilG")
