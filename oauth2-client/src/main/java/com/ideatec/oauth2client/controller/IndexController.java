@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -14,6 +18,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,12 +42,29 @@ public class IndexController {
 		//log.info("client id : {}", clientRegistration.getClientId());
 
 		//log.info("redirect uri : {}", clientRegistration.getRedirectUri());
-
-
-
-
 		return "index";
 	}
+
+	@GetMapping("/userinfo")
+	public OAuth2User getUserInfo(Authentication authentication) {
+		//OAuth2AuthenticationToken authenticationToken1 =  (OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		OAuth2AuthenticationToken authenticationToken2 = (OAuth2AuthenticationToken) authentication;
+		OAuth2User oAuth2User = (OAuth2User)authenticationToken2.getPrincipal();
+		return oAuth2User;
+	}
+
+	@GetMapping("/oauth2user")
+	public OAuth2User getUserInfoOauth2(@AuthenticationPrincipal OAuth2User auth2User) {
+		log.info("oauth2user: {}", auth2User);
+		return auth2User;
+	}
+
+	@GetMapping("/oidcuser")
+	public OAuth2User getUserInfoOidcuser(@AuthenticationPrincipal OidcUser oidcUser) {
+		log.info("oidcUser: {}", oidcUser);
+		return oidcUser;
+	}
+
 
 	@GetMapping("/loginPage")
 	public String loginPage() {

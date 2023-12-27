@@ -40,10 +40,14 @@ public class Oauth2ClientConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
-		http.authorizeHttpRequests(auth -> auth.anyRequest()
-				.permitAll());
+		http.authorizeHttpRequests(auth -> auth.requestMatchers("/login").permitAll()
+				.anyRequest().authenticated());
 		//http.oauth2Login(oauth -> oauth.loginPage("/loginPage"));
-		http.oauth2Login(Customizer.withDefaults());
+		http.oauth2Login(oauth2 -> oauth2.loginPage("/login")
+				.loginProcessingUrl("/login/v1/oauth2/code/*")
+				.authorizationEndpoint(auth -> auth.baseUri("/oauth2/v1/authorization"))
+				.redirectionEndpoint(auth -> auth.baseUri("/login/v1/oauth2/code/*"))
+				);
 		http.logout(auth -> auth.logoutSuccessHandler(oidcLogoutSuccessHandler())
 				.invalidateHttpSession(true)
 				.clearAuthentication(true)
