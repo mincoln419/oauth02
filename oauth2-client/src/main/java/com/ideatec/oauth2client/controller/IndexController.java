@@ -37,6 +37,10 @@ public class IndexController {
 		//log.info("client id : {}", clientRegistration.getClientId());
 
 		//log.info("redirect uri : {}", clientRegistration.getRedirectUri());
+
+
+
+
 		return "index";
 	}
 
