@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.ClientRegistrations;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
@@ -41,20 +42,27 @@ public class Oauth2ClientConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
 		http.authorizeHttpRequests(auth -> auth.requestMatchers("/login").permitAll()
+				.requestMatchers("/home").permitAll()
 				.anyRequest().authenticated());
 		//http.oauth2Login(oauth -> oauth.loginPage("/loginPage"));
-		http.oauth2Login(oauth2 -> oauth2.loginPage("/login")
-				.loginProcessingUrl("/login/v1/oauth2/code/*")
-				.authorizationEndpoint(auth -> auth.baseUri("/oauth2/v1/authorization"))
-				.redirectionEndpoint(auth -> auth.baseUri("/login/v1/oauth2/code/*"))
-				);
-		http.logout(auth -> auth.logoutSuccessHandler(oidcLogoutSuccessHandler())
-				.invalidateHttpSession(true)
-				.clearAuthentication(true)
-				.deleteCookies("JSESSIONID")
-				);
+//		http.oauth2Login(oauth2 -> oauth2.loginPage("/login")
+//				.loginProcessingUrl("/login/oauth2/code/*")
+//				.authorizationEndpoint(auth -> auth.baseUri("/oauth2/authorization"))
+//				.redirectionEndpoint(auth -> auth.baseUri("/login/oauth2/code/*"))
+//				);
+		http.oauth2Login(auth -> auth.authorizationEndpoint(end -> end.authorizationRequestResolver(cutomOAuth2AuthorizationRequestResolver())));
+//		http.logout(auth -> auth.logoutSuccessHandler(oidcLogoutSuccessHandler())
+//				.invalidateHttpSession(true)
+//				.clearAuthentication(true)
+//				.deleteCookies("JSESSIONID")
+//				);
 		return http.build();
 	}
+
+	private OAuth2AuthorizationRequestResolver cutomOAuth2AuthorizationRequestResolver() {
+		return new CustomOAuth2AuthorizationRequestResolver(clientRegistrationRepository, "/oauth2/authorization");
+	}
+
 
 	private LogoutSuccessHandler oidcLogoutSuccessHandler() {
 		OidcClientInitiatedLogoutSuccessHandler successHandler = new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);

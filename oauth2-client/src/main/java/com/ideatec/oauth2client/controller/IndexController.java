@@ -61,7 +61,7 @@ public class IndexController {
 
 	@GetMapping("/oidcuser")
 	public OAuth2User getUserInfoOidcuser(@AuthenticationPrincipal OidcUser oidcUser) {
-		log.info("oidcUser: {}", oidcUser);
+		log.info("oauth2user: {}", oidcUser);
 		return oidcUser;
 	}
 
