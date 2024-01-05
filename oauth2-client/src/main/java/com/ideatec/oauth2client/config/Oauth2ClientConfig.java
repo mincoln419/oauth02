@@ -45,17 +45,22 @@ public class Oauth2ClientConfig {
 				.requestMatchers("/home").permitAll()
 				.anyRequest().authenticated());
 		//http.oauth2Login(oauth -> oauth.loginPage("/loginPage"));
+		//Oauth2Login custom
 //		http.oauth2Login(oauth2 -> oauth2.loginPage("/login")
 //				.loginProcessingUrl("/login/oauth2/code/*")
 //				.authorizationEndpoint(auth -> auth.baseUri("/oauth2/authorization"))
 //				.redirectionEndpoint(auth -> auth.baseUri("/login/oauth2/code/*"))
 //				);
-		http.oauth2Login(auth -> auth.authorizationEndpoint(end -> end.authorizationRequestResolver(cutomOAuth2AuthorizationRequestResolver())));
+		//Custom Resolver 사용
+		//http.oauth2Login(auth -> auth.authorizationEndpoint(end -> end.authorizationRequestResolver(cutomOAuth2AuthorizationRequestResolver())));
+		http.oauth2Client(Customizer.withDefaults());
+
 //		http.logout(auth -> auth.logoutSuccessHandler(oidcLogoutSuccessHandler())
 //				.invalidateHttpSession(true)
 //				.clearAuthentication(true)
 //				.deleteCookies("JSESSIONID")
 //				);
+		http.logout(auth-> auth.logoutUrl("/home"));
 		return http.build();
 	}
 

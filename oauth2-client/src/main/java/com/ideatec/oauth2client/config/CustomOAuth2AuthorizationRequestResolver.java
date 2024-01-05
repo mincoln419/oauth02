@@ -1,5 +1,7 @@
 package com.ideatec.oauth2client.config;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -51,7 +53,17 @@ public class CustomOAuth2AuthorizationRequestResolver implements OAuth2Authoriza
 	}
 
 	private OAuth2AuthorizationRequest customResolve(OAuth2AuthorizationRequest authorizationRequest, String registrationId) {
-		OAuth2AuthorizationRequest.Builder builder = OAuth2AuthorizationRequest.from(authorizationRequest);
+
+		Map<String, Object> extraParam = new HashMap<>();
+
+		extraParam.put("customName1", "customValue1");
+		extraParam.put("customName2", "customValue2");
+		extraParam.put("customName3", "customValue3");
+		extraParam.put("customName4", "customValue4");
+
+		OAuth2AuthorizationRequest.Builder builder = OAuth2AuthorizationRequest
+				.from(authorizationRequest)
+				.additionalParameters(extraParam);
 		DEFAULT_PKCE_APPLIER.accept(builder);
 		return builder.build();
 	}
