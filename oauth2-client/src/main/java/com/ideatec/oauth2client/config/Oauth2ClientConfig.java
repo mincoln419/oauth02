@@ -42,7 +42,7 @@ public class Oauth2ClientConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
 		http.authorizeHttpRequests(auth -> auth.requestMatchers("/login").permitAll()
-				.requestMatchers("/home").permitAll()
+				.requestMatchers("/", "/home","oauth2Login", "/client","/logout").permitAll()
 				.anyRequest().authenticated());
 		//http.oauth2Login(oauth -> oauth.loginPage("/loginPage"));
 		//Oauth2Login custom
@@ -60,7 +60,11 @@ public class Oauth2ClientConfig {
 //				.clearAuthentication(true)
 //				.deleteCookies("JSESSIONID")
 //				);
-		http.logout(auth-> auth.logoutUrl("/home"));
+		http.logout(auth-> auth
+				.invalidateHttpSession(true)
+				.deleteCookies("JESSIONID")
+				.clearAuthentication(true)
+				.logoutUrl("/home"));
 		return http.build();
 	}
 

@@ -31,11 +31,11 @@ public class ClientController {
 	private OAuth2AuthorizedClientService clientService;
 
 	@GetMapping("/client")
-	public String client(HttpServletRequest request, Authentication authentication, Model model) {
+	public String client(HttpServletRequest request , Model model) {
 
-	//	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		String clientRegistrationId = "keycloack";
+		String clientRegistrationId = "keycloak1";
 
 		OAuth2AuthorizedClient auth2AuthorizedClient = clientRepository
 				.loadAuthorizedClient(clientRegistrationId, authentication, request);
@@ -53,9 +53,9 @@ public class ClientController {
 
 		SecurityContextHolder.getContext().setAuthentication(auth2AuthenticationToken);
 
-		model.addAttribute("acessToken", accessToken.getTokenValue());
+		model.addAttribute("accessToken", accessToken.getTokenValue());
 		model.addAttribute("refreshToken",auth2AuthorizedClient.getRefreshToken());
-		model.addAttribute("princlipal name", oAuth2User.getName());
+		model.addAttribute("principalName", oAuth2User.getName());
 		model.addAttribute("clientName", auth2AuthorizedClient.getClientRegistration().getClientName());
 
 
