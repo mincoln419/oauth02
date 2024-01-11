@@ -1,0 +1,26 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2 class="form-signin-heading">HOME</h2>
+    <div sec:authorize="isAuthenticated()">
+        <a th:href="@{/logout}">Logout</a>
+    </div>
+    <form sec:authorize="isAnonymous()" action="#">
+        <p><input type="button" onclick="authorizationCode()" value="AuthorizationCode Grant"></p>
+    </form>
+
+
+</body>
+<script>
+    function authorizationCode(){
+        window.location = new URL("http://localhost:20887/oauth2/authorization/keycloak1");
+    }
+
+</script>
+</html>
