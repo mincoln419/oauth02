@@ -1,4 +1,4 @@
-<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
@@ -9,17 +9,18 @@
 <body>
     <h2 class="form-signin-heading">HOME</h2>
     <div sec:authorize="isAuthenticated()">
-        <a th:href="@{/logout}">Logout</a>
+        <a href="/logoutOuath">Logout</a>
     </div>
     <form sec:authorize="isAnonymous()" action="#">
         <p><input type="button" onclick="authorizationCode()" value="AuthorizationCode Grant"></p>
+        <div sec:authorize="isAnonymous()"><a th:href="@{/oauth2Login(username='user', password='1234')}">Password Flow</a></div>
     </form>
 
 
 </body>
 <script>
     function authorizationCode(){
-        window.location = new URL("http://localhost:20887/oauth2/authorization/keycloak1");
+        window.location = new URL("http://localhost:20887/oauth2/authorization/keycloak");
     }
 
 </script>

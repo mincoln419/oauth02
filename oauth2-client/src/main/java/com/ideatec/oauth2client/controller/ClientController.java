@@ -7,7 +7,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -27,21 +26,15 @@ public class ClientController {
 	@Autowired
 	private OAuth2AuthorizedClientRepository clientRepository;
 
-	@Autowired
-	private OAuth2AuthorizedClientService clientService;
-
 	@GetMapping("/client")
 	public String client(HttpServletRequest request , Model model) {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		String clientRegistrationId = "keycloak1";
+		String clientRegistrationId = "keycloak";
 
 		OAuth2AuthorizedClient auth2AuthorizedClient = clientRepository
 				.loadAuthorizedClient(clientRegistrationId, authentication, request);
-
-		OAuth2AuthorizedClient auth2AuthorizedClient2 = clientService
-				.loadAuthorizedClient(clientRegistrationId, clientRegistrationId);
 
 		OAuth2AccessToken accessToken = auth2AuthorizedClient.getAccessToken();
 
@@ -54,10 +47,9 @@ public class ClientController {
 		SecurityContextHolder.getContext().setAuthentication(auth2AuthenticationToken);
 
 		model.addAttribute("accessToken", accessToken.getTokenValue());
-		model.addAttribute("refreshToken",auth2AuthorizedClient.getRefreshToken());
+		model.addAttribute("refreshToken",auth2AuthorizedClient.getRefreshToken().getTokenValue());
 		model.addAttribute("principalName", oAuth2User.getName());
 		model.addAttribute("clientName", auth2AuthorizedClient.getClientRegistration().getClientName());
-
 
 		return "client";
 	}

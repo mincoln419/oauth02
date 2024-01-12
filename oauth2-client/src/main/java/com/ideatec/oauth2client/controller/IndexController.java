@@ -34,17 +34,6 @@ public class IndexController {
 	private ClientRegistrationRepository clientRegistrationRepository;
 
 
-
-	@GetMapping("/")
-	public String index() {
-		//ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("keycloak");
-
-		//log.info("client id : {}", clientRegistration.getClientId());
-
-		//log.info("redirect uri : {}", clientRegistration.getRedirectUri());
-		return "index";
-	}
-
 	@GetMapping("/userinfo")
 	public OAuth2User getUserInfo(Authentication authentication) {
 		//OAuth2AuthenticationToken authenticationToken1 =  (OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication();

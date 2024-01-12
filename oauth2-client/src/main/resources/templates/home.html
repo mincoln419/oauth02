@@ -11,11 +11,7 @@
     <div sec:authorize="isAuthenticated()">
         <a th:href="@{/logout}">Logout</a>
     </div>
-    <form sec:authorize="isAnonymous()" action="#">
-        <p><input type="button" onclick="authorizationCode()" value="AuthorizationCode Grant"></p>
-        <p><input type="button" onclick="authorizationCodeWithPKCE()" value="AuthorizationCode Grant with PKCE"></p>
-        <p><input type="button" onclick="implicit()" value="implicit Grant"></p>
-    </form>
+    <div>Welcome<p><span th:text = "${oAuth2AuthenticationToken}"/></p></div>
 
 
 </body>
