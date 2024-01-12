@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.OAuth2AuthorizationContext;
@@ -21,6 +22,19 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
 public class AppConfig {
+
+	@Autowired
+	private ClientRegistrationRepository clientRegistrationRepository;
+
+	@Autowired
+	private OAuth2AuthorizedClientRepository auth2AuthorizedClientRepository;
+
+
+	@Bean
+	public DefaultOAuth2AuthorizedClientManager oAuth2AuthorizedClientManager() {
+		return new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository, auth2AuthorizedClientRepository);
+	}
+
 
 	@Bean
 	public OAuth2AuthorizedClientManager auth2AuthorizedClientManager(
@@ -57,5 +71,6 @@ public class AppConfig {
 			return contextAttributes;
 		};
 	}
-	
+
+
 }

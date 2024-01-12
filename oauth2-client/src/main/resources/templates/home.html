@@ -9,9 +9,10 @@
 <body>
     <h2 class="form-signin-heading">HOME</h2>
     <div sec:authorize="isAuthenticated()">
-        <a th:href="@{/logout}">Logout</a>
+        <a th:href="@{/logoutOuath}">Logout</a>
     </div>
-    <div>Welcome<p><span th:text = "${oAuth2AuthenticationToken}"/></p></div>
+    <div>Welcome<p><span th:text = "${auth2AuthenticationToken}"></span></p></div>
+    <div>Welcome<p><span th:text = "${authorizedClient}"></span></p></div>
 
 
 </body>

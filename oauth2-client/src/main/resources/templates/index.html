@@ -7,13 +7,14 @@
     <title>Document</title>
 </head>
 <body>
-    <h2 class="form-signin-heading">HOME</h2>
+    <h2 class="form-signin-heading">INDEX</h2>
     <div sec:authorize="isAuthenticated()">
         <a href="/logoutOuath">Logout</a>
     </div>
     <form sec:authorize="isAnonymous()" action="#">
         <p><input type="button" onclick="authorizationCode()" value="AuthorizationCode Grant"></p>
-        <div sec:authorize="isAnonymous()"><a th:href="@{/oauth2Login(username='user', password='1234')}">Password Flow</a></div>
+        <div sec:authorize="isAnonymous()"><a th:href="@{/oauth2Login(username='user', password='1234')}">Password Flow Login</a></div>
+        <div sec:authorize="isAnonymous()"><a th:href="@{/oauth2Login}">Client Credentials Flow Login</a></div>
     </form>
 
 
