@@ -1,5 +1,6 @@
 package com.ideatec.oauth2client.config;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -43,10 +44,11 @@ public class AppConfig {
 
 		OAuth2AuthorizedClientProvider auth2AuthorizedClientProvider = OAuth2AuthorizedClientProviderBuilder
 				.builder()
-				.password()
+				.password(password -> password.clockSkew(Duration.ofSeconds(3600)))
+				.refreshToken(refresh -> refresh.clockSkew(Duration.ofSeconds(3600)))
 				.authorizationCode()
 				.clientCredentials()
-				.refreshToken()
+				
 				.build();
 
 		DefaultOAuth2AuthorizedClientManager auth2AuthorizedClientManager = new DefaultOAuth2AuthorizedClientManager(

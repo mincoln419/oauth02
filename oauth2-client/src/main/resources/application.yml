@@ -11,7 +11,7 @@ spring:
             client-id: oauth2-client-app
             client-secret: TjdfuL0uelZKt1GlObMq1V89RKkOJMG3
             client-name: oauth2-client-app
-            authorizationGrantType: client_credentials
+            authorizationGrantType: password
             clientAuthenticationMethod: client_secret_basic
             provider: keycloak
         provider: 

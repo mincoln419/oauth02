@@ -1,5 +1,8 @@
 package com.ideatec.oauth2client.controller;
 
+import java.time.Clock;
+import java.time.Duration;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
@@ -9,6 +12,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizationSuccessHand
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.PasswordOAuth2AuthorizedClientProvider;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -37,6 +41,10 @@ public class LoginController {
 	private OAuth2AuthorizedClientRepository auth2AuthorizedClientRepository;
 
 
+	private Duration clockSkew = Duration.ofSeconds(3600);
+
+	private Clock clock = Clock.systemUTC();
+
 
 		@GetMapping("/oauth2Login")
 	public String oauth2Login(Model model, HttpServletRequest request, HttpServletResponse response ) {
@@ -59,11 +67,20 @@ public class LoginController {
 
 		OAuth2AuthorizedClient auth2AuthorizedClient = auth2AuthorizedClientManager.authorize(auth2AuthorizeRequest);
 
+		if(auth2AuthorizedClient != null && hasTokenExpired(auth2AuthorizedClient.getAccessToken()) && auth2AuthorizedClient.getRefreshToken() != null) {
+			auth2AuthorizedClientManager.authorize(auth2AuthorizeRequest);
+		}
+
+
 		//passwordGrantTypeAuthentication(model, auth2AuthorizedClient);
 		credentialGrantTypeAuthentication(model, auth2AuthorizedClient);
 
 		return "home";
 	}
+
+		private boolean hasTokenExpired(OAuth2AccessToken accessToken) {
+			return this.clock.instant().isAfter(accessToken.getExpiresAt().minus(this.clockSkew));
+		}
 
 		private void credentialGrantTypeAuthentication(Model model, OAuth2AuthorizedClient auth2AuthorizedClient) {
 			model.addAttribute("authorizedClient", auth2AuthorizedClient.getAccessToken().getTokenValue());
