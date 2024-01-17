@@ -10,10 +10,15 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.ClientRegistrations;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+
+import jakarta.servlet.Filter;
 
 @Configuration
 public class Oauth2ClientConfig {
@@ -37,24 +42,41 @@ public class Oauth2ClientConfig {
 //				.build();
 //	}
 
+	@Autowired
+	private DefaultOAuth2AuthorizedClientManager auth2AuthorizedClientManager;
+
+	@Autowired
+	private OAuth2AuthorizedClientRepository auth2AuthorizedClientRepository;
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-		http.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/", "/client","/oauth2Login","/logoutOuath").permitAll()
-				.anyRequest().authenticated());
-		//http.oauth2Login(oauth -> oauth.loginPage("/loginPage"));
-		//Oauth2Login custom
+		http.authorizeHttpRequests(auth -> auth.requestMatchers("/", "/client", "/oauth2Login","/v2/oauth2Login", "/logoutOuath")
+				.permitAll().anyRequest().authenticated());
+		// http.oauth2Login(oauth -> oauth.loginPage("/loginPage"));
+		// Oauth2Login custom
 //		http.oauth2Login(oauth2 -> oauth2.loginPage("/login")
 //				.loginProcessingUrl("/login/oauth2/code/*")
 //				.authorizationEndpoint(auth -> auth.baseUri("/oauth2/authorization"))
 //				.redirectionEndpoint(auth -> auth.baseUri("/login/oauth2/code/*"))
 //				);
-		//Custom Resolver 사용
-		//http.oauth2Login(auth -> auth.authorizationEndpoint(end -> end.authorizationRequestResolver(cutomOAuth2AuthorizationRequestResolver())));
+		// Custom Resolver 사용
+		// http.oauth2Login(auth -> auth.authorizationEndpoint(end ->
+		// end.authorizationRequestResolver(cutomOAuth2AuthorizationRequestResolver())));
 		http.oauth2Client(Customizer.withDefaults());
+		http.addFilterBefore(customOauth2AuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
+	}
+
+	private CustomOauth2AuthenticationFilter customOauth2AuthenticationFilter() {
+
+		CustomOauth2AuthenticationFilter authenticationFilter = new CustomOauth2AuthenticationFilter(
+				auth2AuthorizedClientManager, auth2AuthorizedClientRepository);
+		authenticationFilter.setAuthenticationSuccessHandler((request, response, authentication) -> {
+			response.sendRedirect("/home");
+		});
+
+		return authenticationFilter;
 	}
 }

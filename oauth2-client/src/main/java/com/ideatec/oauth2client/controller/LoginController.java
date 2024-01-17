@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.PasswordOAuth2AuthorizedClientProvider;
+import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -73,7 +74,7 @@ public class LoginController {
 
 
 		//passwordGrantTypeAuthentication(model, auth2AuthorizedClient);
-		credentialGrantTypeAuthentication(model, auth2AuthorizedClient);
+		//credentialGrantTypeAuthentication(model, auth2AuthorizedClient);
 
 		return "home";
 	}
@@ -123,6 +124,32 @@ public class LoginController {
 
 		//log.info("redirect uri : {}", clientRegistration.getRedirectUri());
 		return "index";
+	}
+
+	@GetMapping("/v2/oauth2Login")
+	public String oauth2Login(Model model, @RegisteredOAuth2AuthorizedClient("keycloak") OAuth2AuthorizedClient auth2AuthorizedClient) {
+
+
+		if(auth2AuthorizedClient != null) {
+			OAuth2UserService<OAuth2UserRequest, OAuth2User> auth2UserService = new DefaultOAuth2UserService();
+			ClientRegistration clientRegistration = auth2AuthorizedClient.getClientRegistration();
+			OAuth2AccessToken accessToken = auth2AuthorizedClient.getAccessToken();
+			OAuth2UserRequest auth2UserRequest = new OAuth2UserRequest(clientRegistration, accessToken);
+			OAuth2User auth2User = auth2UserService.loadUser(auth2UserRequest);
+
+			SimpleAuthorityMapper simpleAuthorityMapper = new SimpleAuthorityMapper();
+			simpleAuthorityMapper.setPrefix("SYSTEM_");
+
+			OAuth2AuthenticationToken auth2AuthenticationToken = new OAuth2AuthenticationToken(auth2User, auth2User.getAuthorities(), clientRegistration.getRegistrationId());
+
+			SecurityContextHolder.getContext().setAuthentication(auth2AuthenticationToken);
+
+			model.addAttribute("auth2AuthenticationToken", auth2AuthenticationToken);
+			model.addAttribute("refreshToken", auth2AuthorizedClient.getRefreshToken().getTokenValue());
+			model.addAttribute("acessToken", auth2AuthorizedClient.getAccessToken().getTokenValue());
+		}
+
+		return "home";
 	}
 
 }
