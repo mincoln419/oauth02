@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -52,16 +53,17 @@ public class OAuth2ResourceServerConfig {
 		//http.oauth2ResourceServer(resource -> resource.jwt(Customizer.withDefaults()));
 		http.userDetailsService(userDetailsService());
 		http.addFilterBefore(jwtAuthenticationFilter(macSecuritySigner, octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
-		http.addFilterBefore(jwtAuthorizationMacFilter(octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
+		//http.addFilterBefore(jwtAuthorizationMacFilter(octetSequenceKey), UsernamePasswordAuthenticationFilter.class); //mac filter 적용방식
+		http.oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
 		return http.build();
 	}
 
-	@Bean
-	public Filter jwtAuthorizationMacFilter( OctetSequenceKey octetSequenceKey) {
-
-
-		return new JwtAuthorizationMacFilter(octetSequenceKey);
-	}
+//	@Bean
+//	public Filter jwtAuthorizationMacFilter( OctetSequenceKey octetSequenceKey) {
+//
+//
+//		return new JwtAuthorizationMacFilter(octetSequenceKey);
+//	}
 
 	@Bean
 	public Filter jwtAuthenticationFilter(MacSecuritySigner macSecuritySigner, OctetSequenceKey octetSequenceKey) throws Exception {
