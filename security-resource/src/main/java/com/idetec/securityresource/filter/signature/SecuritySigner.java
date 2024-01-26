@@ -2,6 +2,8 @@ package com.idetec.securityresource.filter.signature;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -19,11 +21,13 @@ public abstract class SecuritySigner {
 
 	public String getJwtTokenInterval(MACSigner jwsSigner, UserDetails user, JWK jwk) throws JOSEException {
 		JWSHeader jweHeader = new JWSHeader.Builder((JWSAlgorithm) jwk.getAlgorithm()).keyID(jwk.getKeyID()).build();
+
+		List<String> authorities = user.getAuthorities().stream().map(auth -> auth.getAuthority()).collect(Collectors.toList());
 		JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
 				.subject("user")
 				.issuer("http://localhost:28881")
 				.claim("username", user.getUsername())
-				.claim("authority", user.getAuthorities())
+				.claim("authority", authorities)
 				.expirationTime(new Date(new Date().getTime() + 60 * 1000 * 5))
 				.build();
 

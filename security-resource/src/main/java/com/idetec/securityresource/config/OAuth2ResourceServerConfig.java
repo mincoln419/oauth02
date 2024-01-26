@@ -23,6 +23,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.idetec.securityresource.filter.authentication.JwtAuthenticationFilter;
+import com.idetec.securityresource.filter.authorization.JwtAuthorizationMacFilter;
 import com.idetec.securityresource.filter.signature.MacSecuritySigner;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 
@@ -51,7 +52,15 @@ public class OAuth2ResourceServerConfig {
 		//http.oauth2ResourceServer(resource -> resource.jwt(Customizer.withDefaults()));
 		http.userDetailsService(userDetailsService());
 		http.addFilterBefore(jwtAuthenticationFilter(macSecuritySigner, octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(jwtAuthorizationMacFilter(octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
 		return http.build();
+	}
+
+	@Bean
+	public Filter jwtAuthorizationMacFilter( OctetSequenceKey octetSequenceKey) {
+
+
+		return new JwtAuthorizationMacFilter(octetSequenceKey);
 	}
 
 	@Bean
