@@ -10,7 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
@@ -19,7 +21,7 @@ public abstract class SecuritySigner {
 
 
 
-	public String getJwtTokenInterval(MACSigner jwsSigner, UserDetails user, JWK jwk) throws JOSEException {
+	public String getJwtTokenInterval(JWSSigner jwsSigner, UserDetails user, JWK jwk) throws JOSEException {
 		JWSHeader jweHeader = new JWSHeader.Builder((JWSAlgorithm) jwk.getAlgorithm()).keyID(jwk.getKeyID()).build();
 
 		List<String> authorities = user.getAuthorities().stream().map(auth -> auth.getAuthority()).collect(Collectors.toList());

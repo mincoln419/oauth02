@@ -25,8 +25,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.idetec.securityresource.filter.authentication.JwtAuthenticationFilter;
 import com.idetec.securityresource.filter.authorization.JwtAuthorizationMacFilter;
+import com.idetec.securityresource.filter.authorization.JwtAuthorizationRsaFilter;
 import com.idetec.securityresource.filter.signature.MacSecuritySigner;
+import com.idetec.securityresource.filter.signature.RsaSecuritySigner;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
+import com.nimbusds.jose.jwk.RSAKey;
 
 import jakarta.servlet.Filter;
 
@@ -38,6 +42,9 @@ public class OAuth2ResourceServerConfig {
 
 	@Autowired
 	private MacSecuritySigner macSecuritySigner;
+
+	@Autowired
+	private RsaSecuritySigner rsaSecuritySigner;
 
 	@Autowired
 	private OctetSequenceKey octetSequenceKey;
@@ -52,9 +59,10 @@ public class OAuth2ResourceServerConfig {
 				.anyRequest().authenticated());
 		//http.oauth2ResourceServer(resource -> resource.jwt(Customizer.withDefaults()));
 		http.userDetailsService(userDetailsService());
-		http.addFilterBefore(jwtAuthenticationFilter(macSecuritySigner, octetSequenceKey), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(jwtAuthenticationFilter(null, null), UsernamePasswordAuthenticationFilter.class);
 		//http.addFilterBefore(jwtAuthorizationMacFilter(octetSequenceKey), UsernamePasswordAuthenticationFilter.class); //mac filter 적용방식
-		http.oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
+		http.addFilterBefore(jwtAuthenticationRsaFilter(null), UsernamePasswordAuthenticationFilter.class);
+		//http.oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
 		return http.build();
 	}
 
@@ -64,6 +72,17 @@ public class OAuth2ResourceServerConfig {
 //
 //		return new JwtAuthorizationMacFilter(octetSequenceKey);
 //	}
+
+	@Bean
+	public Filter jwtAuthenticationRsaFilter(RSAKey rsaKey) throws Exception {
+		return new JwtAuthorizationRsaFilter(new RSASSAVerifier(rsaKey));
+	}
+
+	@Bean
+	public AuthenticationManager authenticationRsaManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
+
 
 	@Bean
 	public Filter jwtAuthenticationFilter(MacSecuritySigner macSecuritySigner, OctetSequenceKey octetSequenceKey) throws Exception {
