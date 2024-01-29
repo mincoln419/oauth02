@@ -59,7 +59,7 @@ public class OAuth2ResourceServerConfig {
 				.anyRequest().authenticated());
 		//http.oauth2ResourceServer(resource -> resource.jwt(Customizer.withDefaults()));
 		http.userDetailsService(userDetailsService());
-		http.addFilterBefore(jwtAuthenticationFilter(null, null), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(jwtAuthenticationRSAFilter(null, null), UsernamePasswordAuthenticationFilter.class);
 		//http.addFilterBefore(jwtAuthorizationMacFilter(octetSequenceKey), UsernamePasswordAuthenticationFilter.class); //mac filter 적용방식
 		http.addFilterBefore(jwtAuthenticationRsaFilter(null), UsernamePasswordAuthenticationFilter.class);
 		//http.oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
@@ -75,7 +75,7 @@ public class OAuth2ResourceServerConfig {
 
 	@Bean
 	public Filter jwtAuthenticationRsaFilter(RSAKey rsaKey) throws Exception {
-		return new JwtAuthorizationRsaFilter(new RSASSAVerifier(rsaKey));
+		return new JwtAuthorizationRsaFilter(new RSASSAVerifier(rsaKey.toRSAPublicKey()));
 	}
 
 	@Bean
@@ -85,12 +85,21 @@ public class OAuth2ResourceServerConfig {
 
 
 	@Bean
-	public Filter jwtAuthenticationFilter(MacSecuritySigner macSecuritySigner, OctetSequenceKey octetSequenceKey) throws Exception {
+	public Filter jwtAuthenticationRSAFilter(RsaSecuritySigner securitySigner, RSAKey rsaKey) throws Exception {
 
-		JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(macSecuritySigner, octetSequenceKey);
+		JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(securitySigner, rsaKey);
 		jwtAuthenticationFilter.setAuthenticationManager(authenticationManager(null));
 		return jwtAuthenticationFilter;
 	}
+
+	@Bean
+	public Filter jwtAuthenticationMacFilter(MacSecuritySigner securitySigner, OctetSequenceKey octKey) throws Exception {
+
+		JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(securitySigner, octKey);
+		jwtAuthenticationFilter.setAuthenticationManager(authenticationManager(null));
+		return jwtAuthenticationFilter;
+	}
+
 
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
