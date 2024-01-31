@@ -61,8 +61,9 @@ public class OAuth2ResourceServerConfig {
 		http.userDetailsService(userDetailsService());
 		http.addFilterBefore(jwtAuthenticationRSAFilter(null, null), UsernamePasswordAuthenticationFilter.class);
 		//http.addFilterBefore(jwtAuthorizationMacFilter(octetSequenceKey), UsernamePasswordAuthenticationFilter.class); //mac filter 적용방식
-		http.addFilterBefore(jwtAuthenticationRsaFilter(null), UsernamePasswordAuthenticationFilter.class);
+		//http.addFilterBefore(jwtAuthenticationRsaFilter(null), UsernamePasswordAuthenticationFilter.class);
 		//http.oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
+		http.oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
 		return http.build();
 	}
 
