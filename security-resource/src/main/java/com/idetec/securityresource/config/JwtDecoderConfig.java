@@ -34,5 +34,5 @@ public class JwtDecoderConfig {
 		return NimbusJwtDecoder.withPublicKey(rsakey.toRSAPublicKey())
 				.signatureAlgorithm(SignatureAlgorithm.from(oAuth2ResourceServerProperties.getJwt().getJwsAlgorithms().get(0)))
 				.build();
-	}
+	}// application yml 과 일치된 것이 없으면 JWTDecoder는 기본 JWT Decoder 객체로 만들어서 세팅함 -> application yml 
 }

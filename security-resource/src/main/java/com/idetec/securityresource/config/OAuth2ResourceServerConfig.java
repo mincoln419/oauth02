@@ -1,5 +1,7 @@
 package com.idetec.securityresource.config;
 
+import java.security.interfaces.RSAPublicKey;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +28,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.idetec.securityresource.filter.authentication.JwtAuthenticationFilter;
 import com.idetec.securityresource.filter.authorization.JwtAuthorizationMacFilter;
 import com.idetec.securityresource.filter.authorization.JwtAuthorizationRsaFilter;
+import com.idetec.securityresource.filter.authorization.JwtAuthorizationRsaPublicKeyFilter;
 import com.idetec.securityresource.filter.signature.MacSecuritySigner;
+import com.idetec.securityresource.filter.signature.RsaSecurityPublicKeySigner;
 import com.idetec.securityresource.filter.signature.RsaSecuritySigner;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
@@ -59,10 +63,13 @@ public class OAuth2ResourceServerConfig {
 				.anyRequest().authenticated());
 		//http.oauth2ResourceServer(resource -> resource.jwt(Customizer.withDefaults()));
 		http.userDetailsService(userDetailsService());
-		http.addFilterBefore(jwtAuthenticationRSAFilter(null, null), UsernamePasswordAuthenticationFilter.class);
+		//http.addFilterBefore(jwtAuthenticationRSAPublicKeyFilter(null, null), UsernamePasswordAuthenticationFilter.class);
 		//http.addFilterBefore(jwtAuthorizationMacFilter(octetSequenceKey), UsernamePasswordAuthenticationFilter.class); //mac filter 적용방식
 		//http.addFilterBefore(jwtAuthenticationRsaFilter(null), UsernamePasswordAuthenticationFilter.class);
 		//http.oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
+		//http.oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
+		//http.addFilterBefore(jwtAuthorizationRsaPublicFilter(null), UsernamePasswordAuthenticationFilter.class);
+
 		http.oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
 		return http.build();
 	}
@@ -75,6 +82,11 @@ public class OAuth2ResourceServerConfig {
 //	}
 
 	@Bean
+	public JwtAuthorizationRsaPublicKeyFilter jwtAuthorizationRsaPublicFilter(JwtDecoder jwtDecoder) {
+		return new JwtAuthorizationRsaPublicKeyFilter(jwtDecoder);
+	}
+
+	@Bean
 	public Filter jwtAuthenticationRsaFilter(RSAKey rsaKey) throws Exception {
 		return new JwtAuthorizationRsaFilter(new RSASSAVerifier(rsaKey.toRSAPublicKey()));
 	}
@@ -82,6 +94,15 @@ public class OAuth2ResourceServerConfig {
 	@Bean
 	public AuthenticationManager authenticationRsaManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
 		return authenticationConfiguration.getAuthenticationManager();
+	}
+
+
+	@Bean
+	public Filter jwtAuthenticationRSAPublicKeyFilter(RsaSecurityPublicKeySigner rsaSecurityPublicKeySigner, RSAKey rsaKey) throws Exception {
+
+		JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(rsaSecurityPublicKeySigner, rsaKey);
+		jwtAuthenticationFilter.setAuthenticationManager(authenticationManager(null));
+		return jwtAuthenticationFilter;
 	}
 
 

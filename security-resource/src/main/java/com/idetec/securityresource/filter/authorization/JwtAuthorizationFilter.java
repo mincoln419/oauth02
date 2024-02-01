@@ -29,7 +29,7 @@ public abstract class JwtAuthorizationFilter extends OncePerRequestFilter{
 
 	private JWSVerifier jwkVerifier;
 
-	private static String PREFIX = "Bearer ";
+	protected static String PREFIX = "Bearer ";
 
 	public JwtAuthorizationFilter(JWSVerifier jwkVerifier) {
 		this.jwkVerifier = jwkVerifier;
@@ -40,14 +40,12 @@ public abstract class JwtAuthorizationFilter extends OncePerRequestFilter{
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
-		String header = request.getHeader("Authorization");
-
-		if(header == null || !header.startsWith(PREFIX)) {
+		if(tokenResolve(request)) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		String token = header.replace(PREFIX, "");
+		String token = getToken(request);
 
 		SignedJWT signedJWT;
 
@@ -74,6 +72,15 @@ public abstract class JwtAuthorizationFilter extends OncePerRequestFilter{
 			throw new RuntimeException(e);
 		}
 		filterChain.doFilter(request, response);
+	}
+
+	protected String getToken(HttpServletRequest request) {
+		return request.getHeader("Authorization").replace(PREFIX, "");
+	}
+
+	protected boolean tokenResolve(HttpServletRequest request) {
+		String header = request.getHeader("Authorization");
+		return header == null || !header.startsWith(PREFIX);
 	}
 
 }

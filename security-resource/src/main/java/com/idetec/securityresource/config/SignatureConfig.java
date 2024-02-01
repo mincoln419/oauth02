@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.idetec.securityresource.filter.signature.MacSecuritySigner;
+import com.idetec.securityresource.filter.signature.RsaSecurityPublicKeySigner;
 import com.idetec.securityresource.filter.signature.RsaSecuritySigner;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -41,9 +42,17 @@ public class SignatureConfig {
 	@Bean
 	public RSAKey rsaKey() throws JOSEException {
 		return new RSAKeyGenerator(2048)
-				.keyID("rsakey")
+				.keyID("rsaKey")
 				.algorithm(JWSAlgorithm.RS512)
 				.generate();
 
 	}
+
+	@Bean
+	public RsaSecurityPublicKeySigner rsaSecurityPublicKeySigner() {
+		return new RsaSecurityPublicKeySigner();
+	}
+
+
+
 }
