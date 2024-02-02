@@ -24,6 +24,7 @@ public class RsaSecurityPublicKeySigner extends SecuritySigner{
 		}
 	}
 
+	//extractor 가 따로 없을 경우에는 여기에서 private key 파일을 읽어서 처리하는 프로세스를 추가해야 함
 	public void setPrivateKey(PrivateKey privateKey) {
 		this.privateKey = privateKey;
 	}
